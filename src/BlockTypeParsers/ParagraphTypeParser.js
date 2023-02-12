@@ -49,51 +49,53 @@ export function parseMarkdownToParagraph(paragraphBlock) {
   const paragraphs = [];
   let currentParagraph = null;
 
-  paragraphBlock.children.forEach((item) => {
-    switch (item.type) {
-      case 'text':
-      case 'strong':
-      case 'emphasis':
-      case 'underline':
-        if (currentParagraph && currentParagraph.type === 'image') {
-          paragraphs.push(currentParagraph);
-          currentParagraph = null;
-        }
+  if (paragraphBlock.children) {
+      paragraphBlock.children.forEach((item) => {
+        switch (item.type) {
+          case 'text':
+          case 'strong':
+          case 'emphasis':
+          case 'underline':
+            if (currentParagraph && currentParagraph.type === 'image') {
+              paragraphs.push(currentParagraph);
+              currentParagraph = null;
+            }
 
-        if (!currentParagraph) {
-          currentParagraph = {
-            type: 'paragraph',
-            data: {
-              text: '',
-            },
-          };
-        }
+            if (!currentParagraph) {
+              currentParagraph = {
+                type: 'paragraph',
+                data: {
+                  text: '',
+                },
+              };
+            }
 
-        currentParagraph.data.text += markdownToText(item);
-        break;
-      case 'image':
-        if (currentParagraph.type === 'paragraph') {
-          paragraphs.push(currentParagraph);
-          currentParagraph = null;
-        }
+            currentParagraph.data.text += markdownToText(item);
+            break;
+          case 'image':
+            if (currentParagraph.type === 'paragraph') {
+              paragraphs.push(currentParagraph);
+              currentParagraph = null;
+            }
 
-        if (!currentParagraph) {
-          currentParagraph = {
-            type: 'image',
-            data: {
-              caption: item.title,
-              stretched: false,
-              url: item.url,
-              withBackground: false,
-              withBorder: false,
-            },
-          };
+            if (!currentParagraph) {
+              currentParagraph = {
+                type: 'image',
+                data: {
+                  caption: item.title,
+                  stretched: false,
+                  url: item.url,
+                  withBackground: false,
+                  withBorder: false,
+                },
+              };
+            }
+            break;
+          default:
+            break;
         }
-        break;
-      default:
-        break;
-    }
-  });
+      });
+  }
 
   if (currentParagraph) {
     paragraphs.push(currentParagraph);
